@@ -115,8 +115,10 @@ This Airline Management System is a full-featured, open-source web application d
 
 
 Feel free to contact me for a professional version of this project or for any custom development needs. I can help you build a tailored solution that meets your specific requirements. 
-email: muhammaddanish9350@gmail.com
-whatsaap: +92 3069350982
+email:
+muhammaddanish9350@gmail.com
+whatsapp
+: +92 3069350982
 
 ---
 
