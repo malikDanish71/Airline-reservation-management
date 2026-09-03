@@ -1,0 +1,105 @@
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-extrabold text-gray-900">My Profile</h1>
+        <p class="mt-2 text-gray-600">Manage your account details and bookings.</p>
+        <form action="/logout" method="post" class="mt-4">
+            <button type="submit"
+                class="bg-red-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-700 transition">
+                Logout
+            </button>
+        </form>
+    </header>
+
+    <!-- Account Info -->
+    <div class="bg-white p-8 rounded-xl shadow-lg mb-12">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Account Information</h2>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-500">Name</label>
+                <p class="mt-1 text-lg text-gray-800">
+                    <%= user.name %>
+                </p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-500">Email</label>
+                <p class="mt-1 text-lg text-gray-800">
+                    <%= user.email %>
+                </p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-500">Role</label>
+                <p class="mt-1 text-lg text-gray-800">
+                    <%= user.role %>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Bookings -->
+    <div class="bg-white p-8 rounded-xl shadow-lg">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">My Bookings</h2>
+        <% if (bookings.length===0) { %>
+            <p class="text-gray-500">You have no bookings yet.</p>
+            <% } else { %>
+                <div class="space-y-6">
+                    <% bookings.forEach(b=> { %>
+                        <div
+                            class="booking-card flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                            <div class="flex items-center gap-4">
+                                <img src="<%= b.flight.airline.logoUrl %>" alt="<%= b.flight.airline.name %>"
+                                    class="rounded-full h-12 w-12 object-cover">
+                                <div>
+                                    <p class="font-bold text-lg">
+                                        <%= b.flight.airline.name %>
+                                    </p>
+                                    <p class="text-gray-600 text-sm">
+                                        <strong>
+                                            <%= b.flight.origin.code %>
+                                        </strong> (<%= b.flight.origin.name %>)
+                                            &rarr;
+                                            <strong>
+                                                <%= b.flight.destination.code %>
+                                            </strong> (<%= b.flight.destination.name %>)
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-gray-600 text-sm">
+                                <p><strong>Class:</strong>
+                                    <%= b.seatClass.charAt(0).toUpperCase()+b.seatClass.slice(1) %>
+                                </p>
+                                <p><strong>Type:</strong>
+                                    <%= b.type==='round-trip' ? 'Round Trip' :'One Way' %>
+                                </p>
+                                <p><strong>Booked:</strong>
+                                    <%= new Date(b.createdAt).toLocaleDateString() %>
+                                </p>
+                                <p><strong>Price:</strong>
+                                    <% if (b.price !=null) { %>
+                                        $<%= b.price %>
+                                            <% } else { %>
+                                                <span class="text-red-500">N/A</span>
+                                                <% } %>
+                                </p>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <span class="status-badge status-<%= b.status %>">
+                                    <%= b.status %>
+                                </span>
+
+                                <% if (b.status !=='canceled' ) { %>
+                                    <form action="/bookings/<%= b._id %>?_method=DELETE" method="post"
+                                        onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                        <button type="submit"
+                                            class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-4 rounded-lg transition">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                    <% } %>
+                            </div>
+                        </div>
+                        <% }) %>
+                </div>
+                <% } %>
+    </div>
+</div>

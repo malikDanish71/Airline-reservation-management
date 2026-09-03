@@ -1,0 +1,82 @@
+<div class="container mx-auto p-6 md:p-12">
+
+    <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">
+        Confirm Your Booking
+    </h1>
+
+    <div class="bg-white rounded-xl shadow-md p-8 booking-details">
+        <!-- Airline & Flight Info -->
+        <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+            <img src="<%= flight.airline.logoUrl %>" alt="<%= flight.airline.name %> Logo"
+                class="h-20 w-20 object-cover rounded-full border-2 border-gray-200">
+            <div>
+                <p class="text-xl font-semibold">
+                    <%= flight.airline.name %> — <%= flight.flightNumber %>
+                </p>
+                <p class="text-gray-600">
+                    <%= flight.origin.code %> – <%= flight.destination.code %>
+                </p>
+            </div>
+        </div>
+
+        <!-- Dates & Class -->
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
+            <div>
+                <p><strong>Origin:</strong>
+                    <%= flight.origin.name %> (<%= flight.origin.code %>)
+                </p>
+                <p><strong>Departure:</strong>
+                    <%= depDate %>
+                </p>
+            </div>
+            <div>
+                <p><strong>Destination:</strong>
+                    <%= flight.destination.name %> (<%= flight.destination.code %>)
+                </p>
+                <% if (type==='round-trip' ) { %>
+                    <p><strong>Return:</strong>
+                        <%= retDate %>
+                    </p>
+                    <% } %>
+            </div>
+            <div>
+                <p><strong>Class:</strong>
+                    <%= seatClass.charAt(0).toUpperCase()+seatClass.slice(1) %>
+                </p>
+                <p><strong>Type:</strong>
+                    <%= type==='round-trip' ? 'Round Trip' : 'One Way' %>
+                </p>
+            </div>
+            <div class="text-lg">
+                <p><strong>Price:</strong></p>
+                <p class="text-2xl font-bold text-indigo-600">$<%= price.toFixed(2) %>
+                </p>
+            </div>
+        </div>
+
+        <!-- Destination Image -->
+        <div class="mt-6">
+            <img src="<%= flight.destination.imageUrl %>" alt="<%= flight.destination.name %>"
+                class="w-full h-64 object-cover rounded-lg">
+        </div>
+
+        <!-- Actions -->
+        <form action="/book" method="post" class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+            <!-- hidden data -->
+            <input type="hidden" name="flightId" value="<%= flight._id %>">
+            <input type="hidden" name="seatClass" value="<%= seatClass %>">
+            <input type="hidden" name="type" value="<%= type %>">
+            <input type="hidden" name="depDate" value="<%= depDate %>">
+            <input type="hidden" name="retDate" value="<%= retDate %>">
+
+            <button type="submit"
+                class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg transition">
+                Confirm
+            </button>
+            <a href="/filter"
+                class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-8 rounded-lg text-center transition">
+                Cancel
+            </a>
+        </form>
+    </div>
+</div>

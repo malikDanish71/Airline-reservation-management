@@ -1,0 +1,75 @@
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-extrabold text-gray-900">Manage Airlines</h1>
+        <p class="mt-2 text-gray-600">Add, edit, or delete airline information.</p>
+    </header>
+
+    <!-- Add/Edit Form -->
+    <div class="bg-white p-8 rounded-xl shadow-lg admin-form">
+        <form action="/admin/airlines<% if(edit){ %>/<%=edit._id%>?_method=PUT<%}%>" method="post"
+            enctype="multipart/form-data">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                <%= edit ? 'Edit Airline' : 'Add New Airline' %>
+            </h2>
+
+            <div class="space-y-4">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                    <input type="text" name="name" id="name" required value="<%= edit ? edit.name : '' %>"
+                        class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="logo" class="block text-sm font-medium text-gray-700">Logo</label>
+                    <input type="file" name="logo" id="logo" accept="image/*"
+                        class="mt-1 block w-full text-sm text-gray-500">
+                    <% if(edit && edit.logoUrl){ %>
+                        <img src="<%=edit.logoUrl%>" alt="Current Logo"
+                            class="mt-2 h-20 w-20 object-cover rounded-full border border-gray-300">
+                        <% } %>
+                </div>
+            </div>
+
+            <div class="mt-6 flex space-x-4">
+                <button type="submit"
+                    class="flex-1 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition">
+                    <%= edit ? 'Update Airline' : 'Add Airline' %>
+                </button>
+                <% if(edit){ %>
+                    <a href="/admin/airlines"
+                        class="flex-1 py-3 bg-gray-300 text-gray-800 font-bold rounded-lg hover:bg-gray-400 transition text-center">
+                        Cancel
+                    </a>
+                    <% } %>
+            </div>
+        </form>
+    </div>
+
+    <!-- Airline Cards -->
+    <div class="bg-white p-8 rounded-xl shadow-lg">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Existing Airlines</h2>
+        <div class="airline-grid">
+            <% airlines.forEach(a=> { %>
+                <div class="airline-card">
+                    <img src="<%= a.logoUrl || '/placehold.co/100x100/9CA3AF/FFFFFF?text=?' %>"
+                        alt="<%= a.name %> Logo">
+                    <p class="font-bold text-lg text-gray-900">
+                        <%= a.name %>
+                    </p>
+                    <div class="flex justify-center space-x-2 mt-4">
+                        <a href="/admin/airlines?edit=<%=a._id%>"
+                            class="bg-blue-500 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition">
+                            <i class="fas fa-edit mr-1"></i>Edit
+                        </a>
+                        <form action="/admin/airlines/<%=a._id%>?_method=DELETE" method="post"
+                            onsubmit="return confirm('Delete airline: <%=a.name%>?');">
+                            <button type="submit"
+                                class="bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600 transition">
+                                <i class="fas fa-trash-alt mr-1"></i>Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <% }) %>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,225 @@
+<div class="container mx-auto p-4 md:p-8">
+
+    <header class="text-center mb-8 mt-6">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900">
+            Find Your Next Flight
+        </h1>
+        <p class="text-gray-600 mt-2">
+            Filter through options to find the perfect flight for your journey.
+        </p>
+    </header>
+
+    <!-- Filters Form -->
+    <form action="/filter" method="get" class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 items-end">
+            <!-- Origin & Destination -->
+            <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="origin" class="block text-sm font-medium text-gray-700 mb-1">
+                        Origin
+                    </label>
+                    <input type="text" name="origin" id="origin"
+                        value="<%= typeof origin !== 'undefined' ? origin : '' %>" placeholder="e.g., JFK"
+                        class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                </div>
+                <div>
+                    <label for="destination" class="block text-sm font-medium text-gray-700 mb-1">
+                        Destination
+                    </label>
+                    <input type="text" name="destination" id="destination"
+                        value="<%= typeof destination !== 'undefined' ? destination : '' %>" placeholder="e.g., LHR"
+                        class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                </div>
+            </div>
+
+            <!-- Class & Airline -->
+            <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="seatClass" class="block text-sm font-medium text-gray-700 mb-1">
+                        Class
+                    </label>
+                    <select name="class" id="seatClass"
+                        class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                        <option value="">Any</option>
+                        <% ['economy','business','premium'].forEach(c=>{ %>
+                            <option value="<%= c %>" <%=c===seatClass ? 'selected' : '' %>
+                                ><%= c.charAt(0).toUpperCase()+c.slice(1) %>
+                            </option>
+                            <% }) %>
+                    </select>
+                </div>
+                <div>
+                    <label for="airline" class="block text-sm font-medium text-gray-700 mb-1">
+                        Airline
+                    </label>
+                    <select name="airline" id="airline"
+                        class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                        <option value="">Any Airline</option>
+                        <% airlines.forEach(a=>{ %>
+                            <option value="<%= a._id %>" <%=a._id.toString()===airline ? 'selected' : '' %>
+                                ><%= a.name %>
+                            </option>
+                            <% }) %>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Trip Type -->
+            <div class="lg:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Trip Type</label>
+                <div class="flex items-center space-x-4 bg-gray-50 border border-gray-300 rounded-lg p-1">
+                    <input type="hidden" name="type" id="tripType" value="<%= type || 'one-way' %>">
+                    <button type="button" id="oneWayBtn" onclick="setTripType('one-way')" class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition
+                   <%= type==='round-trip' ? 'text-gray-700 hover:bg-gray-200' : 'bg-indigo-600 text-white' %>">
+                        One Way
+                    </button>
+                    <button type="button" id="roundTripBtn" onclick="setTripType('round-trip')" class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition
+                   <%= type==='round-trip' ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-200' %>">
+                        Round Trip
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dates -->
+            <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="departureDate" class="block text-sm font-medium text-gray-700 mb-1">
+                        Departure
+                    </label>
+                    <input type="date" id="departureDate" name="departureDate" value="<%= departureDate||'' %>"
+                        class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                </div>
+                <div id="arrivalDateContainer" class="<%= type==='round-trip' ? '' : 'hidden' %>">
+                    <label for="arrivalDate" class="block text-sm font-medium text-gray-700 mb-1">
+                        Arrival
+                    </label>
+                    <input type="date" id="arrivalDate" name="arrivalDate" value="<%= arrivalDate||'' %>"
+                        class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                </div>
+            </div>
+
+            <!-- Search Button -->
+            <div class="lg:col-span-1 xl:col-span-1 flex items-end">
+                <button type="submit"
+                    class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition shadow-md">
+                    <i class="fas fa-search mr-2"></i>Search
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Results -->
+    <% if (flights.length===0) { %>
+        <p class="text-center text-gray-500">No flights match your criteria.</p>
+        <% } else { %>
+            <div class="space-y-6 mb-6">
+                <% flights.forEach(f=> { %>
+                    <div class="bg-white rounded-xl shadow-md p-6 ticket-card">
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                            <!-- Airline Logo -->
+                            <div class="md:col-span-2 flex justify-center md:justify-start items-center flex-col">
+                                <img src="<%= f.airline.logoUrl %>" alt="<%= f.airline.name %> Logo"
+                                    class="rounded-full h-16 w-16 border-2 border-gray-200 object-cover">
+                                <p class="font-bold text-gray-600 text-center">
+                                    <%= f.airline.name %>
+                                </p>
+                            </div>
+                            <!-- Details -->
+                            <div class="md:col-span-7">
+                                <div class="flex items-center justify-center md:justify-start space-x-4">
+                                    <div class="text-right">
+                                        <p class="font-bold text-xl text-gray-900">
+                                            <%= f.origin.code %>
+                                        </p>
+                                        <p class="text-sm text-gray-500">
+                                            <%= f.origin.name %>
+                                        </p>
+                                    </div>
+                                    <div class="flex-grow text-center px-2">
+                                        <i class="fas fa-plane-departure text-indigo-600 text-2xl"></i>
+                                        <div class="border-t-2 border-dashed border-gray-300 mt-1"></div>
+                                    </div>
+                                    <div class="text-left">
+                                        <p class="font-bold text-xl text-gray-900">
+                                            <%= f.destination.code %>
+                                        </p>
+                                        <p class="text-sm text-gray-500">
+                                            <%= f.destination.name %>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div
+                                    class="mt-4 text-sm text-gray-600 flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-2">
+                                    <span><strong>Departure:</strong>
+                                        <%= f.depDate %>
+                                    </span>
+                                    <% if (type==='round-trip' ) { %>
+                                        <span><strong>Arrival:</strong>
+                                            <%= f.arrDate %>
+                                        </span>
+                                    <% } %>
+                                    <span><strong>Class:</strong>
+                                        <%= f.seatClass.charAt(0).toUpperCase()+f.seatClass.slice(1) %>
+                                    </span>
+                                    <span><strong>Type:</strong>
+                                        <%= type==='round-trip' ? 'Round Trip' : 'One Way' %>
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- Price & Book -->
+                            <div class="md:col-span-3 text-center md:text-right">
+                                <p class="text-3xl font-bold text-indigo-600 mb-2">$<%= f.price.toFixed(2) %>
+                                </p>
+                                <a href="/book?flight=<%= f._id %>&class=<%= f.seatClass %>&type=<%= type %>&dep=<%= f.depDate %><% if (arrivalDate) { %>&ret=<%= f.arrDate %><% } %>"
+                                    class="inline-block bg-green-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-600 transition">Book
+                                    Now</a>
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex justify-center space-x-4">
+                <% for(let p=1; p<=totalPages; p++){ %>
+                    <a href="?<%= qsWithoutPage %>&page=<%= p %>"
+                        class="px-4 py-2 rounded-md <%= p===page ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 border' %>">
+                        <%= p %>
+                    </a>
+                    <% } %>
+            </div>
+            <% } %>
+</div>
+
+<script>
+    // Date‐picker min today
+    document.addEventListener('DOMContentLoaded', () => {
+        const today = new Date().toISOString().split('T')[0];
+        ['departureDate', 'arrivalDate'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.min = today;
+        });
+    });
+
+    // Trip‐type toggler
+    function setTripType(type) {
+        const aCont = document.getElementById('arrivalDateContainer');
+        const tIn = document.getElementById('tripType');
+        const oB = document.getElementById('oneWayBtn');
+        const rB = document.getElementById('roundTripBtn');
+        tIn.value = type;
+        if (type === 'round-trip') {
+            aCont.classList.remove('hidden');
+            rB.classList.add('bg-indigo-600', 'text-white');
+            rB.classList.remove('text-gray-700', 'hover:bg-gray-200');
+            oB.classList.remove('bg-indigo-600', 'text-white');
+            oB.classList.add('text-gray-700', 'hover:bg-gray-200');
+        } else {
+            aCont.classList.add('hidden');
+            oB.classList.add('bg-indigo-600', 'text-white');
+            oB.classList.remove('text-gray-700', 'hover:bg-gray-200');
+            rB.classList.remove('bg-indigo-600', 'text-white');
+            rB.classList.add('text-gray-700', 'hover:bg-gray-200');
+        }
+    }
+</script>

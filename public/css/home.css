@@ -1,0 +1,41 @@
+/* home.css */
+.hero-section {
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+        url('https://images.unsplash.com/photo-1530521954074-e64f6810b32d?q=80&w=2070&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+}
+
+.location-card {
+    transition: transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.location-card:hover {
+    transform: translateY(-8px);
+    box-shadow:
+        0 20px 25px -5px rgba(0, 0, 0, 0.1),
+        0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* FAQ Accordion */
+details>summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+details>summary::-webkit-details-marker {
+    display: none;
+}
+
+.plus-icon {
+    transition: transform 0.2s ease-in-out;
+}
+
+details[open] summary .plus-icon {
+    transform: rotate(45deg);
+}

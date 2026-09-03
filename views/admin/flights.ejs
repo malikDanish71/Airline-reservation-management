@@ -1,0 +1,239 @@
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-extrabold">Manage Flights</h1>
+        <p class="mt-2 text-gray-600">Add, edit, or delete flight schedules & pricing.</p>
+        <% if (typeof success !=='undefined' && success) { %>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mt-4">
+                <%= success %>
+            </div>
+            <% } %>
+                <% if (typeof error !=='undefined' && error) { %>
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mt-4">
+                        <%= error %>
+                    </div>
+                    <% } %>
+    </header>
+
+    <!-- Add/Edit Form -->
+    <div class="bg-white p-8 rounded-xl shadow-lg admin-form">
+        <form id="flightForm" action="/admin/flights<%= edit ? '/' + edit._id + '?_method=PUT' : '' %>" method="post"
+            <%=edit ? 'enctype="multipart/form-data"' : '' %>>
+            <% if (edit) { %>
+                <!-- Optionally keep hidden _method for extra safety -->
+                <input type="hidden" name="_method" value="PUT">
+                <% } %>
+                    <h2 class="text-2xl font-bold mb-6">
+                        <%= edit ? 'Edit Flight' : 'Add New Flight' %>
+                    </h2>
+
+                    <!-- Basic Fields -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <% const v=edit || {}; %>
+                            <div>
+                                <label class="block text-sm font-medium">Flight Number</label>
+                                <input name="flightNumber" required value="<%= v.flightNumber||'' %>"
+                                    class="w-full p-3 border rounded" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium">Airline</label>
+                                <select id="airline" name="airline" required class="w-full p-3 border rounded">
+                                    <option value="">Select</option>
+                                    <% airlines.forEach(a=>{ %>
+                                        <option value="<%=a._id%>" <%=v.airline &&
+                                            a._id.toString()===v.airline._id.toString()?'selected':'' %>>
+                                            <%=a.name%>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium">Origin</label>
+                                <select id="origin" name="origin" required class="w-full p-3 border rounded">
+                                    <option value="">Select</option>
+                                    <% airports.forEach(ap=>{ %>
+                                        <option value="<%=ap._id%>" <%=v.origin &&
+                                            ap._id.toString()===v.origin._id.toString()?'selected':'' %>>
+                                            <%=ap.code%> – <%=ap.name%>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium">Destination</label>
+                                <select id="destination" name="destination" required class="w-full p-3 border rounded">
+                                    <option value="">Select</option>
+                                    <% airports.forEach(ap=>{ %>
+                                        <option value="<%=ap._id%>" <%=v.destination &&
+                                            ap._id.toString()===v.destination._id.toString()?'selected':'' %>>
+                                            <%=ap.code%> – <%=ap.name%>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium">Departure</label>
+                                <input type="datetime-local" name="departureTime" required
+                                    value="<%= v.departureTime? v.departureTime.toISOString().slice(0,16):'' %>"
+                                    class="w-full p-3 border rounded" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium">Arrival</label>
+                                <input type="datetime-local" name="arrivalTime" required
+                                    value="<%= v.arrivalTime? v.arrivalTime.toISOString().slice(0,16):'' %>"
+                                    class="w-full p-3 border rounded" />
+                            </div>
+                    </div>
+
+                    <!-- Seat Classes -->
+                    <fieldset class="mt-6">
+                        <legend class="text-lg font-semibold mb-2">Seat Classes & Pricing</legend>
+                        <div class="space-y-4">
+                            <% ['economy','business','premium'].forEach(c=> {
+                                const exist = (v.seatClasses||[]).find(sc=>sc.class===c);
+                                %>
+                                <div class="flex items-center space-x-4">
+                                    <label class="inline-flex items-center">
+                                        <input type="checkbox" name="class" value="<%=c%>" class="class-checkbox"
+                                            <%=exist?'checked':'' %> />
+                                        <span class="ml-2 capitalize">
+                                            <%=c%>
+                                        </span>
+                                    </label>
+                                    <div class="prices-container flex space-x-2 <%=exist?'':'hidden'%>"
+                                        data-class="<%=c%>">
+                                        <input type="number" step="any" name="priceOneWay-<%=c%>" placeholder="One‑Way"
+                                            value="<%=exist? exist.priceOneWay:''%>" class="p-2 border rounded w-24" />
+                                        <input type="number" step="any" name="priceRoundTrip-<%=c%>"
+                                            placeholder="Round‑Trip" value="<%=exist? exist.priceRoundTrip:''%>"
+                                            class="p-2 border rounded w-24" />
+                                    </div>
+                                </div>
+                                <% }) %>
+                        </div>
+                    </fieldset>
+
+                    <!-- Submit -->
+                    <div class="mt-6 flex space-x-4">
+                        <button type="submit"
+                            class="flex-1 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                            <%= edit? 'Update Flight' :'Add Flight' %>
+                        </button>
+                        <% if(edit){ %>
+                            <a href="/admin/flights"
+                                class="flex-1 py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 text-center">
+                                Cancel
+                            </a>
+                            <% } %>
+                    </div>
+        </form>
+    </div>
+
+    <!-- Existing Flights List -->
+    <div class="flight-list mt-12">
+        <% flights.forEach(f=>{ %>
+            <div class="flight-card mb-6 p-6 bg-white border rounded-lg shadow-sm" id="flight-<%=f._id%>">
+                <div class="flex justify-between items-center mb-4 border-b pb-4">
+                    <div class="flex items-center gap-4">
+                        <img src="<%=f.airline.logoUrl%>" class="h-10 w-10 rounded-full" alt="">
+                        <div>
+                            <p class="font-bold">
+                                <%=f.airline.name%>
+                            </p>
+                            <p class="text-sm text-gray-600">#<%=f.flightNumber%>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="space-x-2">
+                        <a href="/admin/flights?edit=<%=f._id%>"
+                            class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form action="/admin/flights/<%=f._id%>?_method=DELETE" method="post" style="display:inline"
+                            onsubmit="return confirm('Delete flight <%=f.flightNumber%>?');">
+                            <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p><strong>From:</strong>
+                            <%=f.origin.code%> – <%=f.origin.name%>
+                        </p>
+                        <p><strong>To:</strong>
+                            <%=f.destination.code%> – <%=f.destination.name%>
+                        </p>
+                    </div>
+                    <div>
+                        <p><strong>Departs:</strong>
+                            <%=new Date(f.departureTime).toLocaleString()%>
+                        </p>
+                        <p><strong>Arrives:</strong>
+                            <%=new Date(f.arrivalTime).toLocaleString()%>
+                        </p>
+                    </div>
+                </div>
+
+                <h3 class="font-semibold mb-2">Pricing</h3>
+                <div class="overflow-x-auto">
+                    <table class="price-table w-full text-center border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-4 py-2">Class</th>
+                                <th class="px-4 py-2">One Way</th>
+                                <th class="px-4 py-2">Round Trip</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% f.seatClasses.forEach(sc=>{ %>
+                                <tr class="border-t">
+                                    <td class="px-4 py-2 capitalize">
+                                        <%=sc.class%>
+                                    </td>
+                                    <td class="px-4 py-2">$<%=sc.priceOneWay%>
+                                    </td>
+                                    <td class="px-4 py-2">$<%=sc.priceRoundTrip%>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <% }) %>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.class-checkbox').forEach(chk => {
+        chk.addEventListener('change', e => {
+            const cls = e.target.value;
+            const prices = document.querySelector(`.prices-container[data-class="${cls}"]`);
+            prices.classList.toggle('hidden', !e.target.checked);
+            prices.querySelectorAll('input').forEach(i => i.required = e.target.checked);
+        });
+    });
+    document.getElementById('flightForm').addEventListener('submit', e => {
+        if (!document.getElementById('airline').value ||
+            !document.getElementById('origin').value ||
+            !document.getElementById('destination').value) {
+            alert('Please select Airline, Origin, and Destination.');
+            e.preventDefault();
+        }
+        // Validate seat class prices only for checked classes
+        document.querySelectorAll('.class-checkbox').forEach(chk => {
+            if (chk.checked) {
+                const cls = chk.value;
+                const prices = document.querySelector(`.prices-container[data-class="${cls}"]`);
+                prices.querySelectorAll('input').forEach(i => {
+                    if (!i.value) {
+                        alert('Please enter all prices for selected seat classes.');
+                        e.preventDefault();
+                    }
+                });
+            }
+        });
+    });
+</script>

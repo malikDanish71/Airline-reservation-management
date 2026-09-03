@@ -1,0 +1,59 @@
+
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+  <header class="text-center mb-12">
+    <h1 class="text-4xl font-extrabold text-gray-900">Manage Users</h1>
+    <p class="mt-2 text-gray-600">View and manage user accounts and roles.</p>
+  </header>
+
+  <div class="bg-white p-8 rounded-xl shadow-lg">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">All Users</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach(u => { %>
+            <tr>
+              <td><%= u.name %></td>
+              <td><%= u.email %></td>
+              <td>
+                <span class="role-badge role-<%= u.role %>"><%= u.role %></span>
+              </td>
+              <td class="text-right space-x-4">
+                <!-- Toggle Role -->
+                <form action="/admin/users/<%= u._id %>/role?_method=PUT" method="post" style="display:inline">
+                  <button 
+                    type="submit" 
+                    class="action-btn"
+                    onclick="return confirm('Change <%= u.name %> to <%= u.role==='admin'?'user':'admin' %>?');"
+                  >
+                    Make <%= u.role==='admin'?'User':'Admin' %>
+                  </button>
+                </form>
+
+                <!-- Delete (except self) -->
+                <% if (u._id.toString() !== user._id.toString()) { %>
+                  <form action="/admin/users/<%= u._id %>?_method=DELETE" method="post" style="display:inline">
+                    <button 
+                      type="submit" 
+                      class="action-btn text-red-600"
+                      onclick="return confirm('Permanently delete <%= u.name %>?');"
+                    >
+                      Delete
+                    </button>
+                  </form>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

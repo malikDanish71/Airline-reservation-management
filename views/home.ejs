@@ -1,0 +1,115 @@
+
+<header class="hero-section text-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 text-center">
+        <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight">
+            Discover Your Next Adventure
+        </h1>
+        <p class="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-gray-200">
+            Book flights to top destinations around the world with ease and confidence.
+        </p>
+        <div class="mt-8">
+            <a href="/filter"
+                class="inline-block bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-indigo-700 transition shadow-lg text-lg">
+                Find Flights <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+    </div>
+</header>
+
+<main>
+    <!-- Popular Destinations -->
+    <section id="destinations" class="py-16 md:py-24 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">
+                    Popular Destinations
+                </h2>
+                <p class="text-gray-600 mt-2">Explore cities that travelers love.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <% airports.forEach(a=> { %>
+                    <div class="bg-gray-100 rounded-xl overflow-hidden location-card">
+                        <a href="/filter?destination=<%= a.code %>">
+                            <img src="<%= a.imageUrl %>" alt="<%= a.name %>" class="w-full h-56 object-cover" />
+                            <div class="p-6">
+                                <p class="text-sm font-semibold text-indigo-600">
+                                    <%= a.code %>
+                                </p>
+                                <h3 class="text-xl font-bold text-gray-900 mt-1">
+                                    <%= a.name %>
+                                </h3>
+                            </div>
+                        </a>
+                    </div>
+                    <% }) %>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-16 md:py-24 bg-gray-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">
+                    Frequently Asked Questions
+                </h2>
+                <p class="text-gray-600 mt-2">Have questions? We have answers.</p>
+            </div>
+            <div class="max-w-3xl mx-auto space-y-4">
+                <details class="p-6 border rounded-lg bg-white shadow-sm">
+                    <summary class="font-semibold text-lg flex justify-between items-center">
+                        How do I change my booking?
+                        <span class="plus-icon text-indigo-600 text-2xl font-light">&plus;</span>
+                    </summary>
+                    <p class="mt-4 text-gray-600">
+                        You can manage your booking through the 'My Trips' section after logging in.
+                        For major changes, you may need to contact our customer support team directly.
+                    </p>
+                </details>
+                <details class="p-6 border rounded-lg bg-white shadow-sm">
+                    <summary class="font-semibold text-lg flex justify-between items-center">
+                        What is the baggage allowance?
+                        <span class="plus-icon text-indigo-600 text-2xl font-light">&plus;</span>
+                    </summary>
+                    <p class="mt-4 text-gray-600">
+                        Baggage allowance varies by airline and ticket class. The specific details for your
+                        flight will be provided during the booking process and in your confirmation email.
+                    </p>
+                </details>
+                <details class="p-6 border rounded-lg bg-white shadow-sm">
+                    <summary class="font-semibold text-lg flex justify-between items-center">
+                        Can I book a flight for someone else?
+                        <span class="plus-icon text-indigo-600 text-2xl font-light">&plus;</span>
+                    </summary>
+                    <p class="mt-4 text-gray-600">
+                        Yes, you can book a flight for another person. Just make sure to enter their full name
+                        and details exactly as they appear on their official travel documents (like a passport).
+                    </p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- Airline Partners -->
+    <section id="airlines" class="py-16 md:py-24 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">
+                    Our Airline Partners
+                </h2>
+                <p class="text-gray-600 mt-2">We work with the world's leading airlines.</p>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-8">
+                <% airlines.forEach(air=> { %>
+                    <div class="flex items-center space-x-4">
+                        <img src="<%= air.logoUrl %>" alt="<%= air.name %>"
+                            class="rounded-full h-14 w-14 object-cover" />
+                        <span class="text-lg font-medium text-gray-700">
+                            <%= air.name %>
+                        </span>
+                    </div>
+                    <% }) %>
+            </div>
+        </div>
+    </section>
+</main>
